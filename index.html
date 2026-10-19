@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6153c8" />
+  <title>StudyDue</title>
+  <style>
+    :root { --ink:#24213b; --muted:#77738e; --lilac:#6153c8; --lilac-soft:#efecff; --pink:#fce9f1; --line:#e7e5f1; --white:#fff; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:var(--ink); background:linear-gradient(140deg,#faf9ff 0%,#f4f1ff 50%,#fff8fb 100%); min-height:100vh; }
+    .app { width:min(100%, 880px); margin:0 auto; padding:32px 20px 56px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px; }
+    .brand { display:flex; align-items:center; gap:11px; }
+    .logo { width:44px; height:44px; display:grid; place-items:center; border-radius:15px; background:var(--lilac); color:white; font-weight:800; font-size:22px; box-shadow:0 9px 20px #6153c844; }
+    h1 { margin:0; font-size:25px; letter-spacing:-.7px; } .tagline { margin:2px 0 0; color:var(--muted); font-size:13px; }
+    .today { padding:9px 12px; border-radius:12px; color:var(--lilac); background:var(--white); border:1px solid var(--line); font-size:13px; font-weight:600; }
+    .hero { background:var(--ink); color:white; padding:25px; border-radius:24px; display:flex; justify-content:space-between; gap:20px; align-items:center; box-shadow:0 18px 34px #25213b23; margin-bottom:20px; }
+    .hero p { margin:0 0 5px; color:#d9d6ed; font-size:14px; } .hero h2 { margin:0; font-size:22px; letter-spacing:-.4px; }
+    .hero .count { min-width:91px; text-align:center; border-radius:18px; padding:13px 10px; background:#373259; } .count strong { display:block; font-size:25px; } .count span { font-size:11px; color:#d9d6ed; }
+    .grid { display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start; }
+    .card { background:var(--white); border:1px solid var(--line); border-radius:20px; padding:20px; box-shadow:0 8px 22px #3b335e0a; }
+    .card h3 { margin:0 0 15px; font-size:16px; }
+    .choice { display:flex; gap:8px; margin-bottom:16px; }
+    .choice button { flex:1; border:0; border-radius:11px; padding:10px; background:#f4f3fa; color:var(--muted); font-weight:700; cursor:pointer; }
+    .choice button.active { background:var(--lilac-soft); color:var(--lilac); }
+    label { display:block; color:var(--muted); font-size:12px; font-weight:700; margin:12px 0 6px; }
+    input, select { width:100%; border:1px solid var(--line); background:#fff; color:var(--ink); padding:11px 12px; border-radius:11px; outline:none; font:inherit; font-size:14px; }
+    input:focus, select:focus { border-color:#998df0; box-shadow:0 0 0 3px #efecff; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+    .save { width:100%; margin-top:18px; border:0; border-radius:12px; padding:12px; cursor:pointer; color:white; background:var(--lilac); font-weight:800; font-size:14px; }
+    .save:hover { background:#5142b7; }
+    .list-header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; } .list-header h3 { margin:0; }
+    .filter { border:1px solid var(--line); background:white; padding:7px 9px; border-radius:9px; font-size:12px; color:var(--muted); }
+    .items { display:grid; gap:10px; }
+    .item { padding:13px; display:flex; align-items:center; gap:11px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+    .badge { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; font-size:16px; flex:none; } .assignment { background:#eef2ff; } .exam { background:var(--pink); }
+    .item-main { min-width:0; flex:1; } .item-main strong { display:block; font-size:14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; } .item-main span { color:var(--muted); font-size:12px; }
+    .due { font-size:12px; font-weight:800; text-align:right; color:var(--lilac); } .due small { display:block; color:var(--muted); font-weight:500; margin-top:2px; }
+    .delete { border:0; background:transparent; cursor:pointer; color:#a09bae; font-size:18px; padding:4px; }
+    .empty { padding:28px 12px; text-align:center; border:1px dashed #d8d4e8; border-radius:14px; color:var(--muted); font-size:14px; }
+    .footer-note { text-align:center; margin:17px 0 0; color:var(--muted); font-size:12px; }
+    @media (max-width:720px) { .app{padding-top:22px}.grid{grid-template-columns:1fr}.hero{padding:20px}.today{display:none} }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand"><div class="logo">S</div><div><h1>StudyDue</h1><p class="tagline">Your academic planner</p></div></div>
+      <div class="today" id="today"></div>
+    </header>
+    <section class="hero"><div><p>Keep your semester organized</p><h2>What is due next?</h2></div><div class="count"><strong id="taskCount">0</strong><span>upcoming items</span></div></section>
+    <section class="grid">
+      <form class="card" id="taskForm">
+        <h3>Add an academic task</h3>
+        <div class="choice"><button type="button" class="active" data-type="assignment">Assignment</button><button type="button" data-type="exam">Exam</button></div>
+        <label for="title">Title</label><input id="title" required placeholder="e.g. Database homework" />
+        <label for="course">Course</label><input id="course" required placeholder="e.g. CS 388T" />
+        <div class="row"><div><label for="date">Due date</label><input id="date" type="date" required /></div><div id="timeWrap"><label for="time">Time</label><input id="time" type="time" /></div></div>
+        <button class="save" type="submit">Add to StudyDue</button>
+      </form>
+      <section class="card">
+        <div class="list-header"><h3>Upcoming</h3><select class="filter" id="filter"><option value="all">All items</option><option value="assignment">Assignments</option><option value="exam">Exams</option></select></div>
+        <div class="items" id="items"></div>
+        <p class="footer-note">Items are saved on this device.</p>
+      </section>
+    </section>
+  </main>
+  <script>
+    const key = 'studydue-sprint-1'; let type = 'assignment';
+    const form = document.querySelector('#taskForm'), itemsEl = document.querySelector('#items'), filter = document.querySelector('#filter');
+    const titleInput = document.querySelector('#title'), courseInput = document.querySelector('#course'), dateInput = document.querySelector('#date'), timeInput = document.querySelector('#time');
+    const stored = JSON.parse(localStorage.getItem(key) || '[]');
+    const demo = [{id:'demo-1', type:'assignment', title:'Sprint Planning Report', course:'CS 388T', date:'2026-10-21', time:''},{id:'demo-2', type:'exam', title:'Midterm Exam', course:'Web Development', date:'2026-10-25', time:'10:00'}];
+    let items = stored.length ? stored : demo;
+    document.querySelector('#today').textContent = new Intl.DateTimeFormat('en',{weekday:'short',month:'short',day:'numeric'}).format(new Date());
+    document.querySelectorAll('[data-type]').forEach(btn=>btn.addEventListener('click',()=>{type=btn.dataset.type;document.querySelectorAll('[data-type]').forEach(b=>b.classList.toggle('active',b===btn));document.querySelector('#timeWrap').style.display=type==='exam'?'block':'none';}));
+    function save(){localStorage.setItem(key,JSON.stringify(items));}
+    function fmt(item){const d=new Date(item.date+'T'+(item.time||'12:00'));return new Intl.DateTimeFormat('en',{month:'short',day:'numeric'}).format(d)+(item.time?' · '+item.time:'');}
+    function render(){const selected=filter.value;const sorted=items.filter(x=>selected==='all'||x.type===selected).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));document.querySelector('#taskCount').textContent=items.length;itemsEl.innerHTML=sorted.length?'': '<div class="empty">No tasks here yet. Add your first item.</div>';sorted.forEach(item=>{const el=document.createElement('article');el.className='item';el.innerHTML=`<div class="badge ${item.type}">${item.type==='exam'?'✦':'✓'}</div><div class="item-main"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.course)} · ${item.type}</span></div><div class="due">${fmt(item)}<small>due</small></div><button class="delete" aria-label="Delete task" data-id="${item.id}">×</button>`;itemsEl.appendChild(el);});document.querySelectorAll('.delete').forEach(b=>b.addEventListener('click',()=>{items=items.filter(i=>i.id!==b.dataset.id);save();render();}));}
+    function escapeHtml(s){return s.replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+    form.addEventListener('submit',e=>{e.preventDefault();items.push({id:crypto.randomUUID(),type,title:titleInput.value.trim(),course:courseInput.value.trim(),date:dateInput.value,time:timeInput.value});save();form.reset();render();});filter.addEventListener('change',render);render();
+  </script>
+</body>
+</html>
