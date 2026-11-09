@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#6153c8" />
+  <title>StudyDue — Academic Planner</title>
+  <style>
+    :root { --ink:#24213b; --muted:#77738e; --lilac:#6153c8; --lilac-soft:#efecff; --pink:#fce9f1; --line:#e7e5f1; --white:#fff; --green:#16845b; --red:#b54747; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:linear-gradient(140deg,#faf9ff 0%,#f4f1ff 50%,#fff8fb 100%); min-height:100vh; }
+    button,input,select { font:inherit; }
+    button { cursor:pointer; }
+    .app { width:min(100%,1120px); margin:0 auto; padding:30px 20px 54px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:22px; }
+    .brand { display:flex; align-items:center; gap:11px; }
+    .logo { width:46px; height:46px; display:grid; place-items:center; border-radius:15px; background:var(--lilac); color:#fff; font-weight:800; font-size:22px; box-shadow:0 9px 20px #6153c844; }
+    h1 { margin:0; font-size:25px; letter-spacing:-.7px; }
+    .tagline { margin:2px 0 0; color:var(--muted); font-size:13px; }
+    .header-actions { display:flex; align-items:center; gap:9px; }
+    .today,.small-button { padding:9px 12px; border-radius:11px; color:var(--lilac); background:var(--white); border:1px solid var(--line); font-size:13px; font-weight:650; }
+    .small-button:hover,.secondary:hover { background:#f8f7ff; }
+    .hero { background:var(--ink); color:#fff; padding:22px; border-radius:22px; display:grid; grid-template-columns:1fr 1fr auto; gap:16px; align-items:center; box-shadow:0 18px 34px #25213b23; margin-bottom:18px; }
+    .hero p { margin:0 0 5px; color:#d9d6ed; font-size:13px; }
+    .hero h2 { margin:0; font-size:21px; letter-spacing:-.4px; }
+    .metric { background:#373259; border-radius:15px; padding:12px 15px; min-width:116px; }
+    .metric strong { display:block; font-size:23px; }
+    .metric span { color:#d9d6ed; font-size:11px; }
+    .progress-card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:14px 16px; margin-bottom:18px; }
+    .progress-head { display:flex; justify-content:space-between; gap:10px; align-items:center; font-size:13px; font-weight:700; }
+    .progress-head span:last-child { color:var(--muted); font-weight:500; }
+    .progress-track { height:9px; background:#efedf7; border-radius:99px; overflow:hidden; margin-top:10px; }
+    .progress-fill { height:100%; width:0; background:var(--lilac); border-radius:99px; transition:width .2s; }
+    .grid { display:grid; grid-template-columns:minmax(285px,350px) 1fr; gap:18px; align-items:start; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:19px; padding:19px; box-shadow:0 8px 22px #3b335e0a; }
+    .card h3 { margin:0 0 14px; font-size:16px; }
+    .choice { display:flex; gap:8px; margin-bottom:14px; }
+    .choice button { flex:1; border:0; border-radius:10px; padding:10px; background:#f4f3fa; color:var(--muted); font-weight:700; }
+    .choice button.active { background:var(--lilac-soft); color:var(--lilac); }
+    label { display:block; color:var(--muted); font-size:12px; font-weight:700; margin:11px 0 5px; }
+    input,select { width:100%; border:1px solid var(--line); background:#fff; color:var(--ink); padding:10px 11px; border-radius:10px; outline:none; font-size:13px; }
+    input:focus,select:focus { border-color:#998df0; box-shadow:0 0 0 3px #efecff; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+    .save,.secondary { width:100%; margin-top:15px; border:0; border-radius:11px; padding:11px; font-weight:800; font-size:13px; }
+    .save { color:#fff; background:var(--lilac); }
+    .save:hover { background:#5142b7; }
+    .secondary { background:#f4f3fa; color:var(--ink); }
+    .cancel-edit { display:none; margin-top:8px; }
+    .form-note { color:var(--muted); font-size:11px; line-height:1.45; margin:10px 0 0; }
+    .list-header { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+    .list-header h3 { margin:0; }
+    .list-tools { display:grid; grid-template-columns:repeat(2,minmax(110px,1fr)); gap:8px; margin-bottom:10px; }
+    .list-tools select { padding:8px; font-size:12px; }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; margin:11px 0; }
+    .toolbar button { border:1px solid var(--line); border-radius:9px; padding:8px 10px; color:var(--lilac); background:#fff; font-size:12px; font-weight:700; }
+    .toolbar button.enabled { color:var(--green); border-color:#b9e3d1; background:#f2fbf7; }
+    .reminder-note { color:var(--muted); font-size:11px; margin:0 0 11px; }
+    .items { display:grid; gap:9px; }
+    .group-title { color:var(--muted); font-size:12px; font-weight:800; padding:6px 2px 0; }
+    .item { padding:11px; display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:13px; background:#fff; }
+    .item.completed { opacity:.68; }
+    .item.completed .item-main strong { text-decoration:line-through; }
+    .badge { width:36px; height:36px; display:grid; place-items:center; border-radius:11px; font-size:15px; flex:none; }
+    .assignment { background:#eef2ff; } .exam { background:var(--pink); }
+    .item-main { min-width:0; flex:1; }
+    .item-main strong { display:block; font-size:13px; overflow-wrap:anywhere; }
+    .item-main span { color:var(--muted); font-size:11px; }
+    .item-main .extras { display:flex; flex-wrap:wrap; gap:5px; margin-top:5px; }
+    .pill { display:inline-block; border-radius:99px; padding:2px 7px; background:#f4f3fa; color:var(--muted); font-size:10px; }
+    .pill.urgent { background:#fff0ee; color:var(--red); }
+    .pill.done { background:#ecf8f2; color:var(--green); }
+    .item-main a { color:var(--lilac); font-size:11px; }
+    .due { font-size:11px; font-weight:800; text-align:right; color:var(--lilac); white-space:nowrap; }
+    .due.overdue { color:var(--red); }
+    .due small { display:block; color:var(--muted); font-weight:500; margin-top:2px; }
+    .item-actions { display:flex; gap:3px; align-items:center; }
+    .icon-button { border:0; background:transparent; color:#8e899f; font-size:17px; padding:5px; border-radius:7px; }
+    .icon-button:hover { background:#f4f3fa; color:var(--lilac); }
+    .empty { padding:24px 12px; text-align:center; border:1px dashed #d8d4e8; border-radius:13px; color:var(--muted); font-size:13px; }
+    .footer-note { text-align:center; margin:14px 0 0; color:var(--muted); font-size:11px; }
+    .toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:#24213b; color:#fff; padding:11px 15px; border-radius:11px; box-shadow:0 8px 24px #0002; font-size:13px; z-index:10; display:none; max-width:calc(100% - 28px); }
+    @media(max-width:760px) { .app{padding-top:20px}.grid{grid-template-columns:1fr}.hero{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.header-actions{align-items:flex-end;flex-direction:column}.today{font-size:11px}.list-tools{grid-template-columns:1fr 1fr} }
+    @media(max-width:430px) { .item{gap:7px;padding:9px}.due{font-size:10px}.icon-button{padding:4px}.hero h2{font-size:18px} }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand"><div class="logo">S</div><div><h1>StudyDue</h1><p class="tagline">Your academic planner</p></div></div>
+      <div class="header-actions"><button class="small-button" id="shareButton" type="button">Share / Export</button><div class="today" id="today"></div></div>
+    </header>
+    <section class="hero">
+      <div><p>Keep your semester organized</p><h2>What is due next?</h2></div>
+      <div><p>Next exam</p><h2 id="countdown">No upcoming exams</h2></div>
+      <div class="metric"><strong id="taskCount">0</strong><span>pending items</span></div>
+    </section>
+    <section class="progress-card" aria-label="Weekly assignment progress">
+      <div class="progress-head"><span>This week’s assignments</span><span id="progressText">0 completed</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </section>
+    <section class="grid">
+      <form class="card" id="taskForm">
+        <h3 id="formHeading">Add an academic task</h3>
+        <div class="choice"><button type="button" class="active" data-type="assignment">Assignment</button><button type="button" data-type="exam">Exam</button></div>
+        <label for="title">Title</label><input id="title" required maxlength="90" placeholder="e.g. Database homework" />
+        <label for="course">Course</label><input id="course" required maxlength="50" placeholder="e.g. CS 388T" list="courseOptions" /><datalist id="courseOptions"></datalist>
+        <div class="row"><div><label for="date">Due date</label><input id="date" type="date" required /></div><div id="timeWrap"><label for="time">Time</label><input id="time" type="time" /></div></div>
+        <div class="row"><div><label for="priority">Priority</label><select id="priority"><option value="normal">Normal</option><option value="urgent">Urgent</option></select></div><div><label for="studyHours">Study target (hours)</label><input id="studyHours" type="number" min="0" max="100" step="0.5" placeholder="Optional" /></div></div>
+        <label for="notesUrl">Study material link (optional)</label><input id="notesUrl" type="url" placeholder="https://…" />
+        <button class="save" id="saveButton" type="submit">Add to StudyDue</button>
+        <button class="secondary cancel-edit" id="cancelEdit" type="button">Cancel editing</button>
+        <p class="form-note">Tasks are saved in this browser on this device.</p>
+      </form>
+      <section class="card">
+        <div class="list-header"><h3>Upcoming</h3></div>
+        <div class="list-tools">
+          <select id="typeFilter" aria-label="Filter by task type"><option value="all">All items</option><option value="assignment">Assignments</option><option value="exam">Exams</option></select>
+          <select id="courseFilter" aria-label="Filter by course"><option value="all">All courses</option></select>
+          <select id="statusFilter" aria-label="Filter by completion"><option value="pending">Pending</option><option value="completed">Completed</option><option value="all">All statuses</option></select>
+          <select id="viewMode" aria-label="Group tasks"><option value="date">Sort by due date</option><option value="course">Group by course</option></select>
+        </div>
+        <div class="toolbar"><button type="button" id="reminderButton">Enable reminders</button><button type="button" id="exportButton">Download CSV</button></div>
+        <p class="reminder-note">Reminders appear up to 24 hours before a deadline while this page is open.</p>
+        <div class="items" id="items" aria-live="polite"></div>
+        <p class="footer-note">Your schedule is stored locally on this device.</p>
+      </section>
+    </section>
+  </main>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    (() => {
+      const storageKey = 'studydue-sprint-1';
+      const reminderKey = 'studydue-reminded';
+      const form = document.querySelector('#taskForm');
+      const itemsEl = document.querySelector('#items');
+      const titleInput = document.querySelector('#title');
+      const courseInput = document.querySelector('#course');
+      const dateInput = document.querySelector('#date');
+      const timeInput = document.querySelector('#time');
+      const typeFilter = document.querySelector('#typeFilter');
+      const courseFilter = document.querySelector('#courseFilter');
+      const statusFilter = document.querySelector('#statusFilter');
+      const viewMode = document.querySelector('#viewMode');
+      const toast = document.querySelector('#toast');
+      let type = 'assignment';
+      let editingId = null;
+      let toastTimer;
+      const safeParse = (value, fallback) => { try { return JSON.parse(value) ?? fallback; } catch { return fallback; } };
+      const normalize = x => ({ id:String(x.id || newId()), type:x.type === 'exam' ? 'exam' : 'assignment', title:String(x.title || ''), course:String(x.course || ''), date:String(x.date || ''), time:String(x.time || ''), priority:x.priority === 'urgent' ? 'urgent' : 'normal', studyHours:String(x.studyHours ?? ''), notesUrl:String(x.notesUrl || ''), completed:Boolean(x.completed) });
+      const stored = safeParse(localStorage.getItem(storageKey), []);
+      let items = Array.isArray(stored) ? stored.map(normalize) : [];
+
+      function newId() { return (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`; }
+      function save() { localStorage.setItem(storageKey, JSON.stringify(items)); }
+      function escapeHtml(value) { return String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+      function localDate(date, time='12:00') { return new Date(`${date}T${time || '12:00'}:00`); }
+      function dateLabel(item) { const d = localDate(item.date, item.time); return new Intl.DateTimeFormat('en',{month:'short',day:'numeric'}).format(d) + (item.time ? ` · ${item.time}` : ''); }
+      function isPast(item) { return localDate(item.date, item.time) < new Date(); }
+      function showToast(message) { toast.textContent = message; toast.style.display = 'block'; clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.style.display = 'none', 3000); }
+      function safeUrl(value) { try { const url = new URL(value); return ['http:','https:'].includes(url.protocol) ? url.href : ''; } catch { return ''; } }
+      function weekRange() { const now = new Date(); const start = new Date(now.getFullYear(),now.getMonth(),now.getDate()); const day = (start.getDay()+6)%7; start.setDate(start.getDate()-day); const end = new Date(start); end.setDate(start.getDate()+7); return [start,end]; }
+
+      document.querySelector('#today').textContent = new Intl.DateTimeFormat('en',{weekday:'short',month:'short',day:'numeric'}).format(new Date());
+      document.querySelectorAll('[data-type]').forEach(btn => btn.addEventListener('click', () => {
+        type = btn.dataset.type;
+        document.querySelectorAll('[data-type]').forEach(b => b.classList.toggle('active', b === btn));
+        document.querySelector('#timeWrap').style.display = type === 'exam' ? '' : 'none';
+      }));
+
+      function refreshCourses() {
+        const courses = [...new Set(items.map(x => x.course.trim()).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+        const selected = courseFilter.value;
+        courseFilter.innerHTML = '<option value="all">All courses</option>' + courses.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+        if (courses.includes(selected)) courseFilter.value = selected;
+        document.querySelector('#courseOptions').innerHTML = courses.map(c => `<option value="${escapeHtml(c)}"></option>`).join('');
+      }
+
+      function updateSummary() {
+        document.querySelector('#taskCount').textContent = items.filter(x => !x.completed).length;
+        const [start,end] = weekRange();
+        const weekly = items.filter(x => x.type === 'assignment' && x.date && localDate(x.date) >= start && localDate(x.date) < end);
+        const done = weekly.filter(x => x.completed).length;
+        document.querySelector('#progressText').textContent = `${done} of ${weekly.length} completed`;
+        document.querySelector('#progressFill').style.width = `${weekly.length ? Math.round(done/weekly.length*100) : 0}%`;
+        const nextExam = items.filter(x => x.type === 'exam' && !x.completed && x.date && localDate(x.date,x.time) >= new Date()).sort((a,b) => localDate(a.date,a.time)-localDate(b.date,b.time))[0];
+        if (!nextExam) { document.querySelector('#countdown').textContent = 'No upcoming exams'; return; }
+        const left = Math.max(0,localDate(nextExam.date,nextExam.time)-new Date());
+        const days = Math.floor(left/86400000), hours = Math.floor(left%86400000/3600000);
+        document.querySelector('#countdown').textContent = days ? `${days} day${days===1?'':'s'} left` : `${hours} hour${hours===1?'':'s'} left`;
+      }
+
+      function render() {
+        refreshCourses();
+        updateSummary();
+        const selectedType = typeFilter.value, selectedCourse = courseFilter.value, selectedStatus = statusFilter.value;
+        let visible = items.filter(x => (selectedType === 'all' || x.type === selectedType) && (selectedCourse === 'all' || x.course === selectedCourse) && (selectedStatus === 'all' || (selectedStatus === 'completed' ? x.completed : !x.completed)));
+        visible.sort((a,b) => viewMode.value === 'course'
+          ? a.course.localeCompare(b.course) || localDate(a.date,a.time)-localDate(b.date,b.time)
+          : localDate(a.date,a.time)-localDate(b.date,b.time));
+        itemsEl.innerHTML = '';
+        if (!visible.length) { itemsEl.innerHTML = '<div class="empty">No tasks match this view. Add an item or change the filters.</div>'; return; }
+        let previousCourse = null;
+        visible.forEach(item => {
+          if (viewMode.value === 'course' && item.course !== previousCourse) {
+            const heading = document.createElement('div'); heading.className = 'group-title'; heading.textContent = item.course || 'No course'; itemsEl.appendChild(heading); previousCourse = item.course;
+          }
+          const article = document.createElement('article'); article.className = `item${item.completed?' completed':''}`;
+          const material = safeUrl(item.notesUrl);
+          const dueText = item.completed ? 'completed' : (isPast(item) ? 'overdue' : 'due');
+          article.innerHTML = `<div class="badge ${item.type}">${item.type==='exam'?'✦':'✓'}</div>
+            <div class="item-main"><strong>${escapeHtml(item.title)}</strong><span>${escapeHtml(item.course)} · ${item.type}</span>
+              <div class="extras">${item.priority==='urgent'?'<span class="pill urgent">Urgent</span>':''}${item.studyHours?`<span class="pill">Study: ${escapeHtml(item.studyHours)} h</span>`:''}${item.completed?'<span class="pill done">Completed</span>':''}${material?`<a href="${escapeHtml(material)}" target="_blank" rel="noopener noreferrer">Study material</a>`:''}</div>
+            </div><div class="due${!item.completed&&isPast(item)?' overdue':''}">${dateLabel(item)}<small>${dueText}</small></div>
+            <div class="item-actions"><button class="icon-button toggle" type="button" data-id="${escapeHtml(item.id)}" aria-label="${item.completed?'Mark pending':'Mark complete'}">${item.completed?'↶':'✓'}</button><button class="icon-button edit" type="button" data-id="${escapeHtml(item.id)}" aria-label="Edit task">✎</button><button class="icon-button delete" type="button" data-id="${escapeHtml(item.id)}" aria-label="Delete task">×</button></div>`;
+          itemsEl.appendChild(article);
+        });
+        itemsEl.querySelectorAll('.toggle').forEach(btn => btn.addEventListener('click', () => { const item=items.find(x=>x.id===btn.dataset.id); if(item){item.completed=!item.completed;save();render();} }));
+        itemsEl.querySelectorAll('.edit').forEach(btn => btn.addEventListener('click', () => beginEdit(btn.dataset.id)));
+        itemsEl.querySelectorAll('.delete').forEach(btn => btn.addEventListener('click', () => { items=items.filter(x=>x.id!==btn.dataset.id);save();render();showToast('Task deleted.'); }));
+      }
+
+      function beginEdit(id) {
+        const item = items.find(x=>x.id===id); if(!item) return;
+        editingId = id; type = item.type;
+        document.querySelectorAll('[data-type]').forEach(b=>b.classList.toggle('active',b.dataset.type===type));
+        document.querySelector('#timeWrap').style.display = type==='exam'?'':'none';
+        titleInput.value=item.title;courseInput.value=item.course;dateInput.value=item.date;timeInput.value=item.time;document.querySelector('#priority').value=item.priority;document.querySelector('#studyHours').value=item.studyHours;document.querySelector('#notesUrl').value=item.notesUrl;
+        document.querySelector('#formHeading').textContent='Edit academic task';document.querySelector('#saveButton').textContent='Save changes';document.querySelector('#cancelEdit').style.display='block';
+        form.scrollIntoView({behavior:'smooth',block:'start'});titleInput.focus();
+      }
+      function cancelEdit() {
+        editingId=null;form.reset();type='assignment';document.querySelectorAll('[data-type]').forEach(b=>b.classList.toggle('active',b.dataset.type==='assignment'));document.querySelector('#timeWrap').style.display='none';document.querySelector('#formHeading').textContent='Add an academic task';document.querySelector('#saveButton').textContent='Add to StudyDue';document.querySelector('#cancelEdit').style.display='none';
+      }
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        if (!dateInput.value) { dateInput.focus(); return; }
+        const notes = document.querySelector('#notesUrl').value.trim();
+        if (notes && !safeUrl(notes)) { showToast('Please enter a valid http or https link.'); return; }
+        const data = { type, title:titleInput.value.trim(), course:courseInput.value.trim(), date:dateInput.value, time:type==='exam'?timeInput.value:'', priority:document.querySelector('#priority').value, studyHours:document.querySelector('#studyHours').value, notesUrl:notes };
+        if (editingId) { const item=items.find(x=>x.id===editingId); Object.assign(item,data); showToast('Task updated.'); }
+        else { items.push({id:newId(),...data,completed:false}); showToast('Task added.'); }
+        save();cancelEdit();render();
+      });
+      document.querySelector('#cancelEdit').addEventListener('click',cancelEdit);
+      [typeFilter,courseFilter,statusFilter,viewMode].forEach(el=>el.addEventListener('change',render));
+
+      function scheduleReminders() {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        const reminded = safeParse(localStorage.getItem(reminderKey),{});
+        const now=Date.now(), windowMs=24*60*60*1000;
+        items.filter(x=>!x.completed && x.date).forEach(item=>{
+          const due=localDate(item.date,item.time).getTime();
+          const marker=`${item.id}:${item.date}:${item.time}`;
+          if (due>now && due-now<=windowMs && !reminded[marker]) {
+            new Notification(`${item.type==='exam'?'Exam':'Assignment'} due soon`,{body:`${item.title} (${item.course}) is due ${dateLabel(item)}.`});
+            reminded[marker]=true;
+          }
+        });
+        localStorage.setItem(reminderKey,JSON.stringify(reminded));
+      }
+      document.querySelector('#reminderButton').addEventListener('click',async event=>{
+        if (!('Notification' in window)) { showToast('Notifications are not supported by this browser.'); return; }
+        const permission=await Notification.requestPermission();
+        if(permission==='granted'){event.currentTarget.textContent='Reminders enabled';event.currentTarget.classList.add('enabled');scheduleReminders();showToast('Reminders enabled for this browser.');}
+        else showToast('Notification permission was not granted.');
+      });
+
+      function csvEscape(value) { return `"${String(value??'').replace(/"/g,'""')}"`; }
+      function csvText() {
+        const rows=[['Type','Title','Course','Due date','Time','Priority','Status','Study target (hours)','Study material']];
+        [...items].sort((a,b)=>localDate(a.date,a.time)-localDate(b.date,b.time)).forEach(x=>rows.push([x.type,x.title,x.course,x.date,x.time,x.priority,x.completed?'Completed':'Pending',x.studyHours,x.notesUrl]));
+        return rows.map(row=>row.map(csvEscape).join(',')).join('\r\n');
+      }
+      function downloadCsv() {
+        const blob=new Blob(['\ufeff'+csvText()],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='StudyDue-schedule.csv';a.click();URL.revokeObjectURL(url);showToast('Schedule downloaded as CSV.');
+      }
+      document.querySelector('#exportButton').addEventListener('click',downloadCsv);
+      document.querySelector('#shareButton').addEventListener('click',async()=>{
+        const text=[...items].sort((a,b)=>localDate(a.date,a.time)-localDate(b.date,b.time)).map(x=>`${x.date}${x.time?' '+x.time:''} — ${x.type}: ${x.title} (${x.course})${x.completed?' [Completed]':''}`).join('\n') || 'No StudyDue tasks yet.';
+        if(navigator.share){try{await navigator.share({title:'StudyDue schedule',text});}catch(error){if(error.name!=='AbortError')showToast('Could not open the share menu.');}}
+        else downloadCsv();
+      });
+
+      render();
+      if ('Notification' in window && Notification.permission === 'granted') {
+        const reminderButton = document.querySelector('#reminderButton');
+        reminderButton.textContent = 'Reminders enabled';
+        reminderButton.classList.add('enabled');
+        scheduleReminders();
+      }
+      setInterval(()=>{updateSummary();scheduleReminders();},60000);
+    })();
+  </script>
+</body>
+</html>
